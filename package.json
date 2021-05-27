@@ -1,6 +1,6 @@
 {
   "name": "@secjs/logger",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "scripts": {
     "build": "tsc",
@@ -20,6 +20,7 @@
     "debug": "^4.3.1"
   },
   "files": [
+    "src/utils/*",
     "src/Logger/*",
     "src/Debugger/*",
     "index.d.ts",
