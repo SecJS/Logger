@@ -3,7 +3,7 @@
 > Logger to any NodeJS project
 
 [![GitHub followers](https://img.shields.io/github/followers/jlenon7.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/jlenon7?tab=followers)
-[![GitHub stars](https://img.shields.io/github/stars/secjs/logger.svg?style=social&label=Star&maxAge=2592000)](https://github.com/secjs/core/stargazers/)
+[![GitHub stars](https://img.shields.io/github/stars/secjs/logger.svg?style=social&label=Star&maxAge=2592000)](https://github.com/secjs/logger/stargazers/)
 
 <p>
   <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/secjs/logger?style=for-the-badge&logo=appveyor">
@@ -13,7 +13,7 @@
   <img alt="License" src="https://img.shields.io/badge/license-MIT-brightgreen?style=for-the-badge&logo=appveyor">
 </p>
 
-The intention behind this repository is to always maintain an `Core` project to any NodeJS project.
+The intention behind this repository is to always maintain a `Logger` package to any NodeJS project.
 
 <img src=".github/logger.png" width="200px" align="right" hspace="30px" vspace="100px">
 
