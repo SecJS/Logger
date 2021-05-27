@@ -1,6 +1,6 @@
 {
   "name": "@secjs/logger",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "scripts": {
     "build": "tsc",
@@ -47,7 +47,7 @@
     "typescript": "^4.2.3"
   },
   "files": [
-    "build"
+    "build/*"
   ],
   "husky": {
     "hooks": {
