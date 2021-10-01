@@ -20,7 +20,7 @@ The intention behind this repository is to always maintain a `Logger` package to
 ## Installation
 
 ```bash
-yarn add @secjs/logger
+npm install @secjs/logger
 ```
 
 ## Usage
@@ -80,3 +80,5 @@ debuggerr.log({ joao: 'joao' }, 'SomeContext')
 ```
 
 ---
+
+Made with 🖤 by [jlenon7](https://github.com/jlenon7) :wave:
