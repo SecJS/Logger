@@ -44,33 +44,7 @@ logger.warn('Hello World!', { context: 'LogController' })
 // [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [LogController] Hello World! +0ms
 ```
 
-### Debug / Debugger
-
-> Log any type of requests in your application in private mode only by DEBUG Env
-
-> **IMPORTANT NOTE**: Debug logs will only show up if you run your
-application with **DEBUG environment** set, if you set **Debugger**
-namespace as api:main you can set **DEBUG=*** or **DEBUG=api:*** to show
-all your logs.
-
-> **Example:** DEBUG=api:* npm start
-
-```ts
-import { Debug, Debugger } from '@secjs/logger'
-
-Debug('Hello World!')
-// api:main [SecJS Debugger] 38114 - dd/mm/yyyy, hh:mm:ss AM [Debug] Hello World! +0ms
-
-const debuggerr = new Debugger('DebugService', 'api:services')
-
-debuggerr.info('Hello World!')
-// api:services [SecJS Debugger] 38114 - dd/mm/yyyy, hh:mm:ss AM [DebugService] 'Hello World!' +0ms
-
-debuggerr.error('Hello World!')
-// api:services [SecJS Debugger] 38114 - dd/mm/yyyy, hh:mm:ss AM [DebugService] 'Hello World!' +0ms
-```
-
-### Formatters / Transporters / LogMapper / DebugMapper
+### Formatters / Transporters / LogMapper
 
 > Use transporters and formatters to keep a pattern in how the application will handle the logs. And use mappers 
 > to set formatters and transporters that are going to be used. See the example:
@@ -78,17 +52,14 @@ debuggerr.error('Hello World!')
 ```ts
 import {
   LogMapper,
-  DebugMapper,
   JsonFormatter,
   FileTransporter,
   ContextFormatter,
   changeLogFnMapper,
   ConsoleTransporter,
-  changeDebugFnMapper,
 } from '@secjs/logger'
 
 const logMapper = new LogMapper([new JsonFormatter()], [new FileTransporter()])
-const debugMapper = new DebugMapper([new JsonFormatter()], [new FileTransporter()])
 
 // This function is important to change the default mapper from Log function
 changeLogFnMapper(logMapper)
@@ -101,16 +72,12 @@ logMapper.addTransporter(new ConsoleTransporter('stdout'))
 // You can use removeFormatter and removeTransporter too.
 logMapper.removeFormatter(ContextFormatter)
 logMapper.removeTransporter(ConsoleTransporter)
-
-// This function is important to change the default mapper from Debug function
-changeDebugFnMapper(debugMapper)
-const debug = new Debugger('Context', 'api:main', debugMapper)
 ```
 
-> Now even Log and Debug function and Logger and Debugger class will use the logMapper and debugMapper instance, 
+> Now Log function and Logger class will use the logMapper instance, 
 > all logs will be stringify by JsonFormatter, and be saved inside FileTransporter.
 
-### All default formatters and transporters and custom formatters/transporters
+### Custom formatters and transporters
 
 > Here are all the already implemented formatters and transporters from @secjs/logger
 
@@ -131,24 +98,16 @@ import {
 ```ts
 import { FormatterContract, TransporterContract } from '@secjs/logger'
 
-export interface CustomFormatterOptions {
-  filePath: string
-}
-
 export class CustomFormatter implements FormatterContract {
-  format(message: any, options?: CustomFormatterOptions) {
+  format(message: any, options?: any) {
     createFileToTransportToS3(message, options.filePath)
     
     deleteTheFile(options.filePath)
   }
 }
 
-export interface CustomTransporterOptions {
-  s3Bucket: string
-}
-
 export class CustomTransporter implements TransporterContract {
-  transport(logFormatted: any, options?: CustomTransporterOptions) {
+  transport(logFormatted: any, options?: any) {
     sendToS3(logFormatted, options.s3Bucket)
   }
 }

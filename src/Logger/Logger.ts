@@ -64,5 +64,3 @@ export class Logger {
     this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 }
-
-new Logger().info('Hello')
