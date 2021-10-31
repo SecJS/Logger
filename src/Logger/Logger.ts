@@ -13,7 +13,7 @@ export class Logger {
 
   info(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
     formatterOpts.level = 'INFO'
-    formatterOpts.color = Color.info
+    formatterOpts.color = Color.cyan
     formatterOpts.context = formatterOpts.context || this.context
     transporterOpts.streamType = 'stdout'
 
@@ -22,7 +22,7 @@ export class Logger {
 
   debug(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
     formatterOpts.level = 'DEBUG'
-    formatterOpts.color = Color.debug
+    formatterOpts.color = Color.purple
     formatterOpts.context = formatterOpts.context || this.context
     transporterOpts.streamType = 'stdout'
 
@@ -31,7 +31,7 @@ export class Logger {
 
   warn(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
     formatterOpts.level = 'WARN'
-    formatterOpts.color = Color.warning
+    formatterOpts.color = Color.orange
     formatterOpts.context = formatterOpts.context || this.context
     transporterOpts.streamType = 'stdout'
 
@@ -40,7 +40,7 @@ export class Logger {
 
   error(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
     formatterOpts.level = 'ERROR'
-    formatterOpts.color = Color.error
+    formatterOpts.color = Color.red
     formatterOpts.context = formatterOpts.context || this.context
     transporterOpts.streamType = 'stderr'
 
@@ -49,7 +49,7 @@ export class Logger {
 
   success(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
     formatterOpts.level = 'SUCCESS'
-    formatterOpts.color = Color.log
+    formatterOpts.color = Color.green
     formatterOpts.context = formatterOpts.context || this.context
     transporterOpts.streamType = 'stdout'
 
