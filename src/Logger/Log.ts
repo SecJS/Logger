@@ -1,18 +1,20 @@
-import { Color } from '../utils/color'
-import { getTimestamp } from '../utils/getTimestamp'
+import { LogMapper } from './LogMapper'
+import { ContextFormatter } from '../Formatters/ContextFormatter'
+import { ConsoleTransporter } from '../Transporters/ConsoleTransporter'
 
-export function Log(message: any, context?: string): void {
-  let output = Color.green(message)
+let mapper = new LogMapper(
+  [new ContextFormatter('Log')],
+  [new ConsoleTransporter('stdout')],
+)
 
-  if (typeof message === 'object') {
-    output = `${Color.log('Object:')} ${Color.green(
-      JSON.stringify(message, null, 2),
-    )}\n`
-  }
+export function Log(
+  message: any,
+  formatterOpts?: any,
+  transporterOpts?: any,
+): void {
+  mapper.resolve(message, formatterOpts, transporterOpts)
+}
 
-  const timestamp = Color.white(getTimestamp())
-  const pid = Color.green(`[SecJS] ${process.pid}`)
-  const messageCtx = context ? Color.yellow(`[${context}] `) : ''
-
-  process.stdout.write(`${pid} - ${timestamp} ${messageCtx}${output}\n`)
+export function changeLogFnMapper(m: LogMapper) {
+  mapper = m
 }

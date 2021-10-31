@@ -1,41 +1,77 @@
-import debug from 'debug'
-
-import { Color } from '../utils/color'
-import { Chalk } from 'chalk'
-import { getTimestamp } from '../utils/getTimestamp'
+import { Color } from '../utils/Color'
+import { DebugMapper } from './DebugMapper'
+import { DebugFormatter } from '../Formatters/DebugFormatter'
+import { DebugTransporter } from '../Transporters/DebugTransporter'
 
 export class Debugger {
-  private readonly d: debug.Debugger
+  private readonly context: string
+  private readonly namespace: string
+  private readonly mapper: DebugMapper
 
-  constructor(namespace: string) {
-    this.d = debug.debug(namespace)
+  constructor(
+    context = Debugger.name,
+    namespace = 'api:main',
+    mapper?: DebugMapper,
+  ) {
+    this.context = context
+    this.namespace = namespace
+    this.mapper =
+      mapper ||
+      new DebugMapper([new DebugFormatter(context)], [new DebugTransporter()])
   }
 
-  error(message: any, context?: string): void {
-    this.printMessage(message, Color.red, context)
+  info(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'INFO'
+    formatterOpts.color = Color.info
+    formatterOpts.context = formatterOpts.context || this.context
+
+    transporterOpts.streamType = 'stdout'
+    transporterOpts.namespace = transporterOpts.namespace || this.namespace
+
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  debug(message: any, context?: string): void {
-    this.printMessage(message, Color.purple, context)
+  debug(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'DEBUG'
+    formatterOpts.color = Color.debug
+    formatterOpts.context = formatterOpts.context || this.context
+
+    transporterOpts.streamType = 'stdout'
+    transporterOpts.namespace = transporterOpts.namespace || this.namespace
+
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  warn(message: any, context?: string): void {
-    this.printMessage(message, Color.orange, context)
+  warn(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'WARN'
+    formatterOpts.color = Color.warning
+    formatterOpts.context = formatterOpts.context || this.context
+
+    transporterOpts.streamType = 'stdout'
+    transporterOpts.namespace = transporterOpts.namespace || this.namespace
+
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  printMessage(message: any, color: Chalk, context?: string): void {
-    let output = color(message)
+  error(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'ERROR'
+    formatterOpts.color = Color.error
+    formatterOpts.context = formatterOpts.context || this.context
 
-    if (typeof message === 'object') {
-      output = `${color.bold('Object:')} ${color(
-        JSON.stringify(message, null, 2),
-      )}\n`
-    }
+    transporterOpts.streamType = 'stderr'
+    transporterOpts.namespace = transporterOpts.namespace || this.namespace
 
-    const pid = color(`[SecJS Debugger] ${process.pid}`)
-    const messageCtx = context ? Color.yellow(`[${context}] `) : ''
-    const timestamp = Color.white(getTimestamp())
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
+  }
 
-    this.d(`${pid} - ${timestamp} ${messageCtx}${output}\n`)
+  success(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'SUCCESS'
+    formatterOpts.color = Color.log
+    formatterOpts.context = formatterOpts.context || this.context
+
+    transporterOpts.streamType = 'stdout'
+    transporterOpts.namespace = transporterOpts.namespace || this.namespace
+
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 }

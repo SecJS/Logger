@@ -3,36 +3,54 @@ import chalk, { Chalk } from 'chalk'
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export class Color {
+  static chalk = chalk
+
+  static get bold(): Chalk {
+    return Color.chalk.bold
+  }
+
   static get purple(): Chalk {
-    return chalk.hex('#7059C1')
+    return Color.chalk.hex('#7059C1')
   }
 
   static get yellow(): Chalk {
-    return chalk.hex('#ffe600')
+    return Color.chalk.hex('#ffe600')
   }
 
   static get cyan(): Chalk {
-    return chalk.hex('#00ffff')
+    return Color.chalk.hex('#00ffff')
   }
 
   static get white(): Chalk {
-    return chalk.hex('#ffffff')
+    return Color.chalk.hex('#ffffff')
   }
 
   static get orange(): Chalk {
-    return chalk.hex('#f18b0e')
+    return Color.chalk.hex('#f18b0e')
   }
 
   static get green(): Chalk {
-    return chalk.hex('#0ef12c')
+    return Color.chalk.hex('#0ef12c')
   }
 
   static get darkGreen(): Chalk {
-    return chalk.hex('#1cb70b')
+    return Color.chalk.hex('#1cb70b')
   }
 
   static get red(): Chalk {
-    return chalk.hex('#f10e0e')
+    return Color.chalk.hex('#f10e0e')
+  }
+
+  static removeColors(string: string): any {
+    return Color.chalk.reset(string).replace(
+      // eslint-disable-next-line no-control-regex
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      '',
+    )
+  }
+
+  static get info(): any {
+    return this.cyan.bold
   }
 
   static get log(): any {
@@ -40,7 +58,7 @@ export class Color {
   }
 
   static get debug(): any {
-    return this.orange.bold
+    return this.purple.bold
   }
 
   static get error(): any {
@@ -48,7 +66,7 @@ export class Color {
   }
 
   static get warning(): any {
-    return this.yellow.bold
+    return this.orange.bold
   }
 
   static httpMethod(method: Methods): any {

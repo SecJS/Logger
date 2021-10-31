@@ -122,3 +122,8 @@ dist
 .env
 .env.testing
 .env.production
+
+# Build archives
+*.js
+*.d.ts
+build

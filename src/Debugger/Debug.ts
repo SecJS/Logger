@@ -1,23 +1,20 @@
-import { debug } from 'debug'
-import { Color } from '../utils/color'
-import { getTimestamp } from '../utils/getTimestamp'
+import { DebugMapper } from './DebugMapper'
+import { DebugFormatter } from '../Formatters/DebugFormatter'
+import { DebugTransporter } from '../Transporters/DebugTransporter'
+
+let mapper = new DebugMapper(
+  [new DebugFormatter('Debug')],
+  [new DebugTransporter()],
+)
 
 export function Debug(
   message: any,
-  namespace = 'api:main',
-  context?: string,
+  formatterOpts?: any,
+  transporterOpts?: any,
 ): void {
-  let output = Color.purple(message)
+  mapper.resolve(message, formatterOpts, transporterOpts)
+}
 
-  if (typeof message === 'object') {
-    output = `${Color.purple.bold('Object:')} ${Color.purple(
-      JSON.stringify(message, null, 2),
-    )}\n`
-  }
-
-  const timestamp = Color.white(getTimestamp())
-  const pid = Color.purple(`[SecJS Debugger] ${process.pid}`)
-  const messageCtx = context ? Color.yellow(`[${context}] `) : ''
-
-  debug(namespace)(`${pid} - ${timestamp} ${messageCtx}${output}\n`)
+export function changeDebugFnMapper(m: DebugMapper) {
+  mapper = m
 }
