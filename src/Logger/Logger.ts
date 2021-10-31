@@ -1,7 +1,6 @@
 import { Color } from '../utils/Color'
 import { LogMapper } from './LogMapper'
 import { defaultMapper } from './defaultMapper'
-import { Log } from './Log'
 
 export class Logger {
   private readonly context: string
