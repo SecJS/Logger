@@ -1,8 +1,7 @@
 import { Color } from '../utils/Color'
 import { LogMapper } from './LogMapper'
-import { ContextFormatter } from '../Formatters/ContextFormatter'
-import { FileTransporter } from '../Transporters/FileTransporter'
-import { ConsoleTransporter } from '../Transporters/ConsoleTransporter'
+import { defaultMapper } from './defaultMapper'
+import { Log } from './Log'
 
 export class Logger {
   private readonly context: string
@@ -10,12 +9,7 @@ export class Logger {
 
   constructor(context = Logger.name, mapper?: LogMapper) {
     this.context = context
-    this.mapper =
-      mapper ||
-      new LogMapper(
-        [new ContextFormatter(context)],
-        [new ConsoleTransporter(), new FileTransporter()],
-      )
+    this.mapper = mapper || defaultMapper
   }
 
   info(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
@@ -24,7 +18,6 @@ export class Logger {
     formatterOpts.context = formatterOpts.context || this.context
     transporterOpts.streamType = 'stdout'
 
-    this.mapper.removeTransporter(FileTransporter)
     this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 

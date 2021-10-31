@@ -1,17 +1,15 @@
 import { LogMapper } from './LogMapper'
-import { ContextFormatter } from '../Formatters/ContextFormatter'
-import { ConsoleTransporter } from '../Transporters/ConsoleTransporter'
+import { defaultMapper } from './defaultMapper'
 
-let mapper = new LogMapper(
-  [new ContextFormatter('Log')],
-  [new ConsoleTransporter('stdout')],
-)
+let mapper = defaultMapper
 
 export function Log(
   message: any,
-  formatterOpts?: any,
-  transporterOpts?: any,
+  formatterOpts: any = {},
+  transporterOpts: any = {},
 ): void {
+  formatterOpts.context = 'Log'
+
   mapper.resolve(message, formatterOpts, transporterOpts)
 }
 
