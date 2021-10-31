@@ -1,94 +1,66 @@
-import { Chalk } from 'chalk'
-import { Color } from '../utils/color'
-import { getTimestamp } from '../utils/getTimestamp'
+import { Color } from '../utils/Color'
+import { LogMapper } from './LogMapper'
+import { ContextFormatter } from '../Formatters/ContextFormatter'
+import { FileTransporter } from '../Transporters/FileTransporter'
+import { ConsoleTransporter } from '../Transporters/ConsoleTransporter'
 
 export class Logger {
   private readonly context: string
+  private readonly mapper: LogMapper
 
-  constructor(context: string) {
+  constructor(context = Logger.name, mapper?: LogMapper) {
     this.context = context
+    this.mapper =
+      mapper ||
+      new LogMapper(
+        [new ContextFormatter(context)],
+        [new ConsoleTransporter(), new FileTransporter()],
+      )
   }
 
-  private static lastTimestamp?: number
+  info(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'INFO'
+    formatterOpts.color = Color.info
+    formatterOpts.context = formatterOpts.context || this.context
+    transporterOpts.streamType = 'stdout'
 
-  error(
-    message: any,
-    trace?: any,
-    context?: string,
-    isTimeDiffEnabled = true,
-  ): void {
-    Logger.printMessage(
-      message,
-      Color.red,
-      context || this.context,
-      'stderr',
-      isTimeDiffEnabled,
-    )
-    Logger.printStackTrace(trace)
+    this.mapper.removeTransporter(FileTransporter)
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  log(message: any, context?: string, isTimeDiffEnabled = true): void {
-    Logger.printMessage(
-      message,
-      Color.green,
-      context || this.context,
-      'stdout',
-      isTimeDiffEnabled,
-    )
+  debug(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'DEBUG'
+    formatterOpts.color = Color.debug
+    formatterOpts.context = formatterOpts.context || this.context
+    transporterOpts.streamType = 'stdout'
+
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  warn(message: any, context?: string, isTimeDiffEnabled = true): void {
-    Logger.printMessage(
-      message,
-      Color.orange,
-      context || this.context,
-      'stdout',
-      isTimeDiffEnabled,
-    )
+  warn(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'WARN'
+    formatterOpts.color = Color.warning
+    formatterOpts.context = formatterOpts.context || this.context
+    transporterOpts.streamType = 'stdout'
+
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  private static getTimestampDiff(isTimeDiffEnabled?: boolean): string {
-    let result = ''
+  error(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'ERROR'
+    formatterOpts.color = Color.error
+    formatterOpts.context = formatterOpts.context || this.context
+    transporterOpts.streamType = 'stderr'
 
-    if (Logger.lastTimestamp && isTimeDiffEnabled) {
-      result = Color.yellow(` +${Date.now() - Logger.lastTimestamp}ms`)
-    }
-
-    Logger.lastTimestamp = Date.now()
-
-    return result
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 
-  private static printMessage(
-    message: any,
-    color: Chalk,
-    context: string,
-    writeStreamType: 'stderr' | 'stdout' = 'stdout',
-    isTimeDiffEnabled?: boolean,
-  ): void {
-    let output = color(message)
+  success(message: any, formatterOpts: any = {}, transporterOpts: any = {}) {
+    formatterOpts.level = 'SUCCESS'
+    formatterOpts.color = Color.log
+    formatterOpts.context = formatterOpts.context || this.context
+    transporterOpts.streamType = 'stdout'
 
-    if (typeof message === 'object') {
-      output = `${color.bold('Object:')} ${color(
-        JSON.stringify(message, null, 2),
-      )}\n`
-    }
-
-    const pid = color(`[SecJS] ${process.pid}`)
-    const timestamp = Color.white(getTimestamp())
-    const messageCtx = Color.yellow(`[${context}] `)
-    const timestampDiff = Logger.getTimestampDiff(isTimeDiffEnabled)
-
-    process[writeStreamType].write(
-      `${pid} - ${timestamp} ${messageCtx}${output}${timestampDiff}\n`,
-    )
-  }
-
-  private static printStackTrace(trace: any) {
-    if (!trace) {
-      return
-    }
-
-    process.stderr.write(`${trace}\n`)
+    this.mapper.resolve(message, formatterOpts, transporterOpts)
   }
 }

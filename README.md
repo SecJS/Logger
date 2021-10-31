@@ -29,54 +29,98 @@ npm install @secjs/logger
 
 > Log any type of requests in your application in public mode
 
-```js
+```ts
 import { Log, Logger } from '@secjs/logger'
 
-Log('Hello World!', 'Context')
-// [SecJS] 38114 - dd/mm/yyyy, hh:mm:ss PM [Context] Hello World!
+Log('Hello World!')
+// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Log] Hello World! +0ms
 
-const logger = new Logger('Context')
+const logger = new Logger('LogService')
 
-logger.log('Hello World!')
-// [SecJS] 38114 - dd/mm/yyyy, hh:mm:ss PM [Context] Hello World!
+logger.success('Hello World!')
+// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [LogService] Hello World! +0ms
 
-logger.log('Hello World!', 'DiffContext')
-// [SecJS] 38114 - dd/mm/yyyy, hh:mm:ss PM [DiffContext] Hello World!
+logger.warn('Hello World!', { context: 'LogController' })
+// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [LogController] Hello World! +0ms
 ```
 
-### Debug / Debugger
+### Formatters / Transporters / LogMapper
 
-> Log any type of requests in your application in private mode only by DEBUG Env
+> Use transporters and formatters to keep a pattern in how the application will handle the logs. And use mappers 
+> to set formatters and transporters that are going to be used. See the example:
 
-> **IMPORTANT NOTE**: Debug logs will only show up if you run your
-application with **DEBUG environment** set, if you set **Debugger**
-namespace as api:main you can set **DEBUG=*** or **DEBUG=api:*** to show
-all your logs.
+```ts
+import {
+  LogMapper,
+  JsonFormatter,
+  FileTransporter,
+  ContextFormatter,
+  changeLogFnMapper,
+  ConsoleTransporter,
+} from '@secjs/logger'
 
-> **Example:** DEBUG=api:* yarn start
+const logMapper = new LogMapper([new JsonFormatter()], [new FileTransporter()])
 
-```js
-import { Debug, Debugger } from '@secjs/logger'
+// This function is important to change the default mapper from Log function
+changeLogFnMapper(logMapper)
+const logger = new Logger('Context', logMapper)
 
-Debug('Hello World!', 'api:main', 'Context')
-// api:main [SecJS Debugger] 38114 - dd/mm/yyyy, hh:mm:ss AM [SomeContext] Hello World!
-// api:main  +0ms
+// You can use addFormatter and addTransporter to add more formatters and transporters
+logMapper.addFormatter(new ContextFormatter('Context'))
+logMapper.addTransporter(new ConsoleTransporter('stdout'))
 
-const debuggerr = new Debugger('api:services')
+// You can use removeFormatter and removeTransporter too.
+logMapper.removeFormatter(ContextFormatter)
+logMapper.removeTransporter(ConsoleTransporter)
+```
 
-debuggerr.log({ joao: 'joao' })
-// api:services [SecJS Debugger] 38114 - dd/mm/yyyy, hh:mm:ss AM Object: {
-// api:services   "joao": "joao"
-// api:services }
-// api:services
-// api:services  +0ms
+> Now Log function and Logger class will use the logMapper instance, 
+> all logs will be stringify by JsonFormatter, and be saved inside FileTransporter.
 
-debuggerr.log({ joao: 'joao' }, 'SomeContext')
-// api:services [SecJS Debugger] 38114 - dd/mm/yyyy, hh:mm:ss AM [SomeContext] Object: {
-// api:services   "joao": "joao"
-// api:services }
-// api:services
-// api:services  +0ms
+### Custom formatters and transporters
+
+> Here are all the already implemented formatters and transporters from @secjs/logger
+
+```ts
+import {
+  LogFormatter,
+  JsonFormatter,
+  DebugFormatter,
+  ContextFormatter,
+  FileTransporter,
+  DebugTransporter,
+  ConsoleTransporter,
+} from '@secjs/logger'
+```
+
+> You can define your own formatters and transporters using the contracts
+
+```ts
+import { FormatterContract, TransporterContract } from '@secjs/logger'
+
+export class CustomFormatter implements FormatterContract {
+  format(message: any, options?: any) {
+    createFileToTransportToS3(message, options.filePath)
+    
+    deleteTheFile(options.filePath)
+  }
+}
+
+export class CustomTransporter implements TransporterContract {
+  transport(logFormatted: any, options?: any) {
+    sendToS3(logFormatted, options.s3Bucket)
+  }
+}
+```
+
+> Then, use it with the mappers
+
+```ts
+import { LogMapper } from '@secjs/logger'
+
+const s3LogMapper = new LogMapper([new CustomFormatter()], [new CustomFormatter()])
+
+const s3Logger = new Logger('S3LoggerService', s3LogMapper)
 ```
 
 ---
