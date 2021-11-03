@@ -1,9 +1,12 @@
+import './src/utils/global'
+
 export * from './src/utils/Color'
 export * from './src/utils/getTimestamp'
 
 export * from './src/Logger/Log'
 export * from './src/Logger/Logger'
 export * from './src/Logger/LogMapper'
+export * from './src/Logger/defaultMapper'
 
 export * from './src/Contracts/FormatterContract'
 export * from './src/Contracts/TransporterContract'
