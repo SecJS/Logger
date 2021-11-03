@@ -1,5 +1,3 @@
-import './src/utils/global'
-
 export * from './src/utils/Color'
 export * from './src/utils/getTimestamp'
 
