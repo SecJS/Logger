@@ -1,6 +1,5 @@
-
 node_modules/
-dist/
+
 # Logs
 logs
 *.log
@@ -81,7 +80,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -123,7 +121,8 @@ dist
 .env.testing
 .env.production
 
-# Build archives
+# Build files
 *.js
 *.d.ts
+dist
 build
