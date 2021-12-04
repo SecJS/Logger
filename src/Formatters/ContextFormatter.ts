@@ -9,28 +9,19 @@ export interface ContextFormatterOptions {
 }
 
 export class ContextFormatter implements FormatterContract {
-  private readonly presets: ContextFormatterOptions
-
-  constructor(context = ContextFormatter.name, color = Color.green) {
-    this.presets = { color, context }
-  }
-
-  resolvePreset(options?: ContextFormatterOptions) {
-    return {
-      ...this.presets,
-      ...options,
-    }
-  }
-
   format(message: string, options?: ContextFormatterOptions): string {
-    const presets = this.resolvePreset(options)
+    options = Object.assign(
+      {},
+      { color: Color.green, context: 'Logger' },
+      options,
+    )
 
     const pid = Color.yellow(`[SecJS] - PID: ${process.pid}`)
     const timestamp = Color.white(getTimestamp())
-    const messageCtx = Color.yellow(`[${presets.context}] `)
+    const messageCtx = Color.yellow(`[${options.context}] `)
     const timestampDiff = ContextFormatter.getTimestampDiff()
 
-    return `${pid} - ${timestamp} ${messageCtx}${presets.color(
+    return `${pid} - ${timestamp} ${messageCtx}${options.color(
       message,
     )}${timestampDiff}`
   }

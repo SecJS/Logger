@@ -1,13 +1,7 @@
-import { Log } from '../Logger/Log'
-import { Logger } from '../Logger/Logger'
-import { LogMapper } from '../Logger/LogMapper'
-import { DebugFormatter } from '../Formatters/DebugFormatter'
-import { DebugTransporter } from '../Transporters/DebugTransporter'
-
 export {}
 
 declare global {
-  function Debug(message: any, namespace?: string, context?: string): void
+   Debug(message: any, namespace?: string, context?: string): void
   function Log(message: any, formatterOpts?: any, transporterOpts?: any): void
 }
 
