@@ -140,12 +140,14 @@ interface CustomDriverOpts {}
 class CustomDriver implements DriverContract {
   private readonly _level: string
   private readonly _context: string
+  private readonly _formatter: string
   
   constructor(channel: string) {
     const config = Config.get(`logging.channels.${channel}`)
     
     this._level = config.level || 'INFO'
     this._context = config.context || 'CustomDriver'
+    this._formatter = config.formatter || 'context'
   }
 
   transport(message: string, options?: CustomDriverOpts): void {
