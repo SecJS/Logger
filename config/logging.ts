@@ -31,16 +31,18 @@ export default {
     application: {
       driver: 'console',
       context: 'Logger',
-      streamType: 'stdout',
       formatter: 'context',
     },
     debug: {
       driver: 'debug',
       context: 'Debugger',
+      formatter: 'context',
       namespace: 'api:main',
     },
     file: {
       driver: 'file',
+      context: 'Logger',
+      formatter: 'log',
       filePath: Path.noBuild().logs('secjs.log'),
     },
   },

@@ -1,13 +1,13 @@
 import { Config } from '@secjs/config'
 import { Color } from '../utils/Color'
-import { Formatters } from '../Formatters/Formatters'
+import { format } from '../utils/format'
 import { DriverContract } from '../Contracts/DriverContract'
-import { FormatterContract } from '../Contracts/FormatterContract'
 
 export interface ConsoleDriverOpts {
   color: Color
   level: string
   context: string
+  streamType: string
 }
 
 export class ConsoleDriver implements DriverContract {
@@ -17,10 +17,12 @@ export class ConsoleDriver implements DriverContract {
   private readonly _streamType: string
 
   constructor(channel: string) {
-    this._level = Config.get(`logging.channel.${channel}.level`)
-    this._context = Config.get(`logging.channel.${channel}.context`)
-    this._formatter = Config.get(`logging.channel.${channel}.formatter`)
-    this._streamType = Config.get(`logging.channel.${channel}.streamType`)
+    const config = Config.get(`logging.channels.${channel}`) || {}
+
+    this._level = config.level || 'INFO'
+    this._context = config.context || 'ConsoleDriver'
+    this._formatter = config.formatter || 'context'
+    this._streamType = config.streamType || 'stdout'
   }
 
   transport(message: string, options?: ConsoleDriverOpts): void {
@@ -34,22 +36,8 @@ export class ConsoleDriver implements DriverContract {
       options,
     )
 
-    const Formatter = this.getFormatter()
-
-    message = Formatter.format(message, {
-      color: options.color,
-      level: options.level,
-      context: options.context,
-    })
+    message = format(this._formatter, message, options)
 
     process[this._streamType].write(`${message}\n`)
-  }
-
-  private getFormatter(): FormatterContract {
-    const Formatter = Formatters[this._formatter]
-
-    if (!Formatter) throw new Error(`Formatter ${this._formatter} not found`)
-
-    return new Formatter()
   }
 }

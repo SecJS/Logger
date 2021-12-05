@@ -17,7 +17,7 @@ export class ContextFormatter implements FormatterContract {
     )
 
     const pid = Color.yellow(`[SecJS] - PID: ${process.pid}`)
-    const timestamp = Color.white(getTimestamp())
+    const timestamp = getTimestamp()
     const messageCtx = Color.yellow(`[${options.context}] `)
     const timestampDiff = ContextFormatter.getTimestampDiff()
 

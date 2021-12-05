@@ -1,13 +1,34 @@
+import {
+  InternalServerException,
+  NotImplementedException,
+} from '@secjs/exceptions'
+
 import { Config } from '@secjs/config'
 import { Color } from './utils/Color'
 import { Drivers } from './Drivers/Drivers'
 import { Formatters } from './Formatters/Formatters'
 import { DriverContract } from './Contracts/DriverContract'
-import { NotImplementedException } from '@secjs/exceptions'
+import { FormatterContract } from './Contracts/FormatterContract'
 
 export class Logger {
   private _tempDrivers: DriverContract[] | null = null
   private _defaultDriver: DriverContract | null = null
+
+  static buildDriver(name: string, driver: DriverContract) {
+    if (Drivers[name]) {
+      throw new InternalServerException(`Driver ${name} already exists`)
+    }
+
+    Drivers[name] = driver
+  }
+
+  static buildFormatter(name: string, formatter: FormatterContract) {
+    if (Formatters[name]) {
+      throw new InternalServerException(`Formatter ${name} already exists`)
+    }
+
+    Formatters[name] = formatter
+  }
 
   static get drivers(): string[] {
     return Object.keys(Drivers)
@@ -106,6 +127,8 @@ export class Logger {
     options = Object.assign({}, { context: 'Logger' }, options)
 
     this._driver(message, options)
+
+    this._tempDrivers = []
   }
 
   info(message: any, options?: any) {
@@ -116,6 +139,8 @@ export class Logger {
     options.streamType = 'stdout'
 
     this._driver(message, options)
+
+    this._tempDrivers = []
   }
 
   warn(message: any, options?: any) {
@@ -126,6 +151,8 @@ export class Logger {
     options.streamType = 'stdout'
 
     this._driver(message, options)
+
+    this._tempDrivers = []
   }
 
   error(message: any, options?: any) {
@@ -136,6 +163,8 @@ export class Logger {
     options.streamType = 'stderr'
 
     this._driver(message, options)
+
+    this._tempDrivers = []
   }
 
   debug(message: any, options?: any) {
@@ -146,6 +175,8 @@ export class Logger {
     options.streamType = 'stdout'
 
     this._driver(message, options)
+
+    this._tempDrivers = []
   }
 
   success(message: any, options?: any) {
@@ -156,5 +187,7 @@ export class Logger {
     options.streamType = 'stdout'
 
     this._driver(message, options)
+
+    this._tempDrivers = []
   }
 }

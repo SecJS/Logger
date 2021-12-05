@@ -13,7 +13,7 @@ export class LogFormatter implements FormatterContract {
     options = Object.assign({}, { color: Color.green, level: 'info' }, options)
 
     const pid = Color.yellow(`[SecJS] - PID: ${process.pid}`)
-    const timestamp = Color.white(getTimestamp())
+    const timestamp = getTimestamp()
     const level = LogFormatter.paintByLevel(options.level)
 
     return `${pid} - ${timestamp} ${level} ${options.color(message)}`
