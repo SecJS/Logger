@@ -1,3 +1,4 @@
+import { Log as LogInstance } from '../Log'
 import { DriverContract } from '../Contracts/DriverContract'
 import { FormatterContract } from '../Contracts/FormatterContract'
 
@@ -27,4 +28,4 @@ declare global {
 
 const _global = global as any
 
-_global.Log = Log
+_global.Log = LogInstance
