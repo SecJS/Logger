@@ -13,7 +13,6 @@ declare global {
 
     static get drivers(): string[]
     static get formatters(): string[]
-    static changeDefaultChannel(channel: string): typeof Log
     static channel(channel: string): typeof Log
     static channels(...channels: string[]): typeof Log
 
