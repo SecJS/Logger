@@ -3,7 +3,12 @@ import { DriverContract } from './Contracts/DriverContract'
 import { FormatterContract } from './Contracts/FormatterContract'
 
 export class Log {
+  private static _options?: any = {}
   private static logger: Logger = new Logger()
+
+  static options(options?: any) {
+    this._options = options
+  }
 
   static buildDriver(name: string, driver: DriverContract): typeof Log {
     Logger.buildDriver(name, driver)
@@ -41,36 +46,66 @@ export class Log {
   }
 
   static log(message: any, options?: any) {
+    options = {
+      ...options,
+      ...this._options,
+    }
+
     this.logger.log(message, options)
 
     this.logger = new Logger()
   }
 
   static info(message: any, options?: any) {
+    options = {
+      ...options,
+      ...this._options,
+    }
+
     this.logger.info(message, options)
 
     this.logger = new Logger()
   }
 
   static warn(message: any, options?: any) {
+    options = {
+      ...options,
+      ...this._options,
+    }
+
     this.logger.warn(message, options)
 
     this.logger = new Logger()
   }
 
   static error(message: any, options?: any) {
+    options = {
+      ...options,
+      ...this._options,
+    }
+
     this.logger.error(message, options)
 
     this.logger = new Logger()
   }
 
   static debug(message: any, options?: any) {
+    options = {
+      ...options,
+      ...this._options,
+    }
+
     this.logger.debug(message, options)
 
     this.logger = new Logger()
   }
 
   static success(message: any, options?: any) {
+    options = {
+      ...options,
+      ...this._options,
+    }
+
     this.logger.success(message, options)
 
     this.logger = new Logger()

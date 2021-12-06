@@ -11,6 +11,7 @@ import { DriverContract } from './Contracts/DriverContract'
 import { FormatterContract } from './Contracts/FormatterContract'
 
 export class Logger {
+  private readonly _options?: any = {}
   private _tempDrivers: DriverContract[] | null = null
   private _defaultDriver: DriverContract | null = null
 
@@ -38,11 +39,16 @@ export class Logger {
     return Object.keys(Formatters)
   }
 
-  constructor() {
+  constructor(options?: any) {
+    this._options = options
     const defaultChannel = Config.get('logging.default')
     const channelConfig = Config.get(`logging.channels.${defaultChannel}`)
+    const driver =
+      this._options && this._options.driver
+        ? this._options.driver
+        : channelConfig.driver
 
-    this._defaultDriver = new Drivers[channelConfig.driver](defaultChannel)
+    this._defaultDriver = new Drivers[driver](defaultChannel)
   }
 
   private _driver(message: any, options?: any) {
@@ -137,6 +143,10 @@ export class Logger {
     options.level = 'INFO'
     options.color = Color.cyan
     options.streamType = 'stdout'
+    options = {
+      ...options,
+      ...this._options,
+    }
 
     this._driver(message, options)
 
@@ -149,6 +159,10 @@ export class Logger {
     options.level = 'WARN'
     options.color = Color.orange
     options.streamType = 'stdout'
+    options = {
+      ...options,
+      ...this._options,
+    }
 
     this._driver(message, options)
 
@@ -161,6 +175,10 @@ export class Logger {
     options.level = 'ERROR'
     options.color = Color.red
     options.streamType = 'stderr'
+    options = {
+      ...options,
+      ...this._options,
+    }
 
     this._driver(message, options)
 
@@ -173,6 +191,10 @@ export class Logger {
     options.level = 'DEBUG'
     options.color = Color.purple
     options.streamType = 'stdout'
+    options = {
+      ...options,
+      ...this._options,
+    }
 
     this._driver(message, options)
 
@@ -185,6 +207,10 @@ export class Logger {
     options.level = 'SUCCESS'
     options.color = Color.green
     options.streamType = 'stdout'
+    options = {
+      ...options,
+      ...this._options,
+    }
 
     this._driver(message, options)
 
