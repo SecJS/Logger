@@ -1,27 +1,30 @@
-import { Log } from '../Logger/Log'
-import { Logger } from '../Logger/Logger'
-import { LogMapper } from '../Logger/LogMapper'
-import { DebugFormatter } from '../Formatters/DebugFormatter'
-import { DebugTransporter } from '../Transporters/DebugTransporter'
+import { DriverContract } from '../Contracts/DriverContract'
+import { FormatterContract } from '../Contracts/FormatterContract'
 
 export {}
 
 declare global {
-  function Debug(message: any, namespace?: string, context?: string): void
-  function Log(message: any, formatterOpts?: any, transporterOpts?: any): void
+  class Log {
+    static buildDriver(name: string, driver: DriverContract): typeof Log
+    static buildFormatter(
+      name: string,
+      formatter: FormatterContract,
+    ): typeof Log
+
+    static get drivers(): string[]
+    static get formatters(): string[]
+    static channel(channel: string): typeof Log
+    static channels(...channels: string[]): typeof Log
+
+    static log(message: any, options?: any)
+    static info(message: any, options?: any)
+    static warn(message: any, options?: any)
+    static error(message: any, options?: any)
+    static debug(message: any, options?: any)
+    static success(message: any, options?: any)
+  }
 }
 
 const _global = global as any
-const debug = new Logger().debug.bind({
-  context: 'Debugger',
-  mapper: new LogMapper([new DebugFormatter()], [new DebugTransporter()]),
-})
 
 _global.Log = Log
-_global.Debug = (
-  message: any,
-  namespace = 'api:main',
-  context = 'Debug',
-): void => {
-  debug(message, { context }, { namespace })
-}

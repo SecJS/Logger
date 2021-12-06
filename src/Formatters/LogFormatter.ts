@@ -9,30 +9,14 @@ export interface LogFormatterOptions {
 }
 
 export class LogFormatter implements FormatterContract {
-  private readonly presets: LogFormatterOptions
-
-  constructor(
-    color = Color.info,
-    level: 'INFO' | 'DEBUG' | 'WARN' | 'ERROR' | 'SUCCESS' = 'INFO',
-  ) {
-    this.presets = { color, level }
-  }
-
-  resolvePreset(options?: LogFormatterOptions) {
-    return {
-      ...this.presets,
-      ...options,
-    }
-  }
-
   format(message: string, options?: LogFormatterOptions): string {
-    const presets = this.resolvePreset(options)
+    options = Object.assign({}, { color: Color.green, level: 'info' }, options)
 
     const pid = Color.yellow(`[SecJS] - PID: ${process.pid}`)
-    const timestamp = Color.white(getTimestamp())
-    const level = LogFormatter.paintByLevel(presets.level)
+    const timestamp = getTimestamp()
+    const level = LogFormatter.paintByLevel(options.level)
 
-    return `${pid} - ${timestamp} ${level} ${presets.color(message)}`
+    return `${pid} - ${timestamp} ${level} ${options.color(message)}`
   }
 
   private static paintByLevel(level: string) {

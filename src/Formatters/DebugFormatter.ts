@@ -6,31 +6,23 @@ import { FormatterContract } from '../Contracts/FormatterContract'
 export interface DebugFormatterOptions {
   color: Chalk
   context: string
+  namespace: string
 }
 
 export class DebugFormatter implements FormatterContract {
-  private readonly presets: DebugFormatterOptions
-
-  constructor(context = DebugFormatter.name, color = Color.white) {
-    this.presets = { color, context }
-  }
-
-  resolvePreset(options?: DebugFormatterOptions) {
-    return {
-      ...this.presets,
-      ...options,
-    }
-  }
-
   format(message: string, options?: DebugFormatterOptions): string {
-    const presets = this.resolvePreset(options)
+    options = Object.assign(
+      {},
+      { color: Color.green, context: 'Debugger', namespace: 'api:main' },
+      options,
+    )
 
     const pid = Color.purple(`[SecJS Debugger] - PID: ${process.pid}`)
     const timestamp = Color.white(getTimestamp())
-    const messageCtx = Color.yellow(`[${presets.context}] `)
+    const messageCtx = Color.yellow(`[${options.context}] `)
     const timestampDiff = DebugFormatter.getTimestampDiff()
 
-    return `${pid} - ${timestamp} ${messageCtx}${presets.color(
+    return `${pid} - ${timestamp} ${messageCtx}${options.color(
       message,
     )}${timestampDiff}`
   }

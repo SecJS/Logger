@@ -31,102 +31,196 @@ npm install @secjs/logger
 
 ## Usage
 
-### Log / Logger
+### Config logging template
 
-> Log any type of requests in your application in public mode
+> First you need to create the configuration file logging in the config folder on project root path. Is extremely important to use export default in these configurations.
 
 ```ts
-import { Log, Logger } from '@secjs/logger'
+import { Env } from '@secjs/env'
+import { Path } from '@secjs/utils'
 
-Log('Hello World!')
-// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Log] Hello World! +0ms
+export default {
+  /*
+  |--------------------------------------------------------------------------
+  | Default Log Channel
+  |--------------------------------------------------------------------------
+  |
+  | This option defines the default log channel that gets used when writing
+  | messages to the logs. The name specified in this option should match
+  | one of the channels defined in the "channels" configuration object.
+  |
+  */
 
-const logger = new Logger('LogService')
+  default: Env('LOGGING_CHANNEL', 'application'),
+
+  /*
+  |--------------------------------------------------------------------------
+  | Log Channels
+  |--------------------------------------------------------------------------
+  |
+  | Here you may configure the log channels for your application.
+  |
+  | Available Drivers: "console", "debug", "file".
+  | Available Formatters: "context", "debug", "json", "log".
+  |
+  */
+
+  channels: {
+    application: {
+      driver: 'console',
+      context: 'Logger',
+      formatter: 'context',
+    },
+    debug: {
+      driver: 'debug',
+      context: 'Debugger',
+      formatter: 'context',
+      namespace: 'api:main',
+    },
+    file: {
+      driver: 'file',
+      context: 'Logger',
+      formatter: 'log',
+      filePath: Path.noBuild().logs('secjs.log'),
+    },
+  },
+}
+```
+
+### Log / Logger
+
+> With the config/logging file created you can use Log and Logger classes to start logging.
+
+```ts
+import { Log, Logger, Color } from '@secjs/logger'
+
+// Log and Logger will always use the default values of channel inside config/logging, the default channel in here is "application".
+Log.log('Hello World!')
+// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Logger] Hello World! +0ms
+
+const logger = new Logger()
 
 logger.success('Hello World!')
-// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [LogService] Hello World! +0ms
+// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Logger] Hello World! +0ms
 
-logger.warn('Hello World!', { context: 'LogController' })
+// You can pass options to formatters and drivers as second parameter
+logger.warn('Hello World!', { color: Color.purple, context: 'LogController' })
 // [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [LogController] Hello World! +0ms
 ```
 
-### Formatters / Transporters / LogMapper
+### Using other channels
 
-> Use transporters and formatters to keep a pattern in how the application will handle the logs. And use mappers 
-> to set formatters and transporters that are going to be used. See the example:
+> You can use any channel that you configure inside config/logging, SecJS has default channels inside the template file.
 
 ```ts
-import {
-  LogMapper,
-  JsonFormatter,
-  FileTransporter,
-  ContextFormatter,
-  changeLogFnMapper,
-  ConsoleTransporter,
-} from '@secjs/logger'
-
-const logMapper = new LogMapper([new JsonFormatter()], [new FileTransporter()])
-
-// This function is important to change the default mapper from Log function
-changeLogFnMapper(logMapper)
-const logger = new Logger('Context', logMapper)
-
-// You can use addFormatter and addTransporter to add more formatters and transporters
-logMapper.addFormatter(new ContextFormatter('Context'))
-logMapper.addTransporter(new ConsoleTransporter('stdout'))
-
-// You can use removeFormatter and removeTransporter too.
-logMapper.removeFormatter(ContextFormatter)
-logMapper.removeTransporter(ConsoleTransporter)
+Log.channel('debug').log('Hello debug world!', { namespace: 'api:example' })
+// api:example [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Debugger] Hello debug world! +0ms
 ```
 
-> Now Log function and Logger class will use the logMapper instance, 
-> all logs will be stringify by JsonFormatter, and be saved inside FileTransporter.
-
-### Custom formatters and transporters
-
-> Here are all the already implemented formatters and transporters from @secjs/logger
+> You can use many channels to handle the log in all of then
 
 ```ts
-import {
-  LogFormatter,
-  JsonFormatter,
-  DebugFormatter,
-  ContextFormatter,
-  FileTransporter,
-  DebugTransporter,
-  ConsoleTransporter,
-} from '@secjs/logger'
+Log.channels('debug', 'application', 'file').info('Hello World!', { namespace: 'api:example' })
+// api:example [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Debugger] Hello World! +0ms
+// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Logger] Hello World! +0ms
+
+// In storage/logs/secjs.log file 
+// [SecJS] - PID: 196416 - dd/mm/yyyy, hh:mm:ss [INFO] Hello World!
 ```
 
-> You can define your own formatters and transporters using the contracts
+### Extending drivers, channels and formatters
+
+> Nowadays, @secjs/logger has only FileDriver, DebugDriver and ConsoleDriver support, but you can extend the drivers for Logger class if you implement DriverContract interface.
 
 ```ts
-import { FormatterContract, TransporterContract } from '@secjs/logger'
+import { DriverContract, FormatterContract, format } from '@secjs/logger'
 
-export class CustomFormatter implements FormatterContract {
-  format(message: any, options?: any) {
-    createFileToTransportToS3(message, options.filePath)
+interface CustomDriverOpts {}
+
+class CustomDriver implements DriverContract {
+  private readonly _level: string
+  private readonly _context: string
+  private readonly _formatter: string
+  
+  constructor(channel: string) {
+    const config = Config.get(`logging.channels.${channel}`)
     
-    deleteTheFile(options.filePath)
+    this._level = config.level || 'INFO'
+    this._context = config.context || 'CustomDriver'
+    this._formatter = config.formatter || 'context'
   }
-}
 
-export class CustomTransporter implements TransporterContract {
-  transport(logFormatted: any, options?: any) {
-    sendToS3(logFormatted, options.s3Bucket)
+  transport(message: string, options?: CustomDriverOpts): void {
+    options = Object.assign(
+      {},
+      {
+        level: this._level,
+        context: this._context,
+        streamType: this._streamType,
+      },
+      options,
+    )
+
+    message = format(this._formatter, message, options)
+
+    process[this._streamType].write(`${message}\n`)
   }
 }
 ```
 
-> Then, use it with the mappers
+> Same to extend formatters
 
 ```ts
-import { LogMapper } from '@secjs/logger'
+class CustomFormatter implements FormatterContract {
+  // all the methods implemented from FormatterContract...
+}
+```
 
-const s3LogMapper = new LogMapper([new CustomFormatter()], [new CustomFormatter()])
+> Constructor is extremely important in your CustomDriver class, it's the constructor that will use the values from config/logging channels to manipulate your CustomDriver using channel and channels method from logger. 
+> So if you are building a CustomDriver, and you want to use it, you can create a new channel inside config/logging channels or change the driver from an existing channel.
 
-const s3Logger = new Logger('S3LoggerService', s3LogMapper)
+```ts
+// extending channels
+// config/logging file
+
+export default {
+  // default etc...
+  
+  channels: {
+    mychannel: {
+      driver: 'custom',
+      level: 'INFO',
+      formatter: 'context',
+      context: 'Logger',
+    }
+    // ... other disks
+  }
+}
+```
+
+> Now you can build your new driver using Logger class
+
+```ts
+const driverName = 'custom'
+const formatterName = 'custom'
+const driver = CustomDriver
+const formatter = CustomFormatter
+
+Logger.buildDriver(driverName, driver)
+Logger.buildFormatter(formatterName, CustomFormatter)
+
+console.log(Logger.drivers) // ['console', 'debug', 'file', 'custom']
+console.log(Logger.formatters) // ['context', 'debug', 'json', 'log', 'custom']
+```
+
+> Now, if you have implemented your channel in config/logging, you can use him inside logger
+
+```ts
+// options of your driver and formatter
+const options = {}
+
+// Will use CustomDriver to handle the log actions
+logger.channel('mychannel').success('Hello World!!', options)
 ```
 
 ---
