@@ -126,3 +126,4 @@ out
 *.d.ts
 dist
 build
+storage
