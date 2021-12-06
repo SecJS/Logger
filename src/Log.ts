@@ -28,12 +28,6 @@ export class Log {
     return Logger.formatters
   }
 
-  static changeDefaultChannel(channel: string): typeof Log {
-    this.logger.changeDefaultChannel(channel)
-
-    return this
-  }
-
   static channel(channel: string): typeof Log {
     this.logger.channel(channel)
 
@@ -48,25 +42,37 @@ export class Log {
 
   static log(message: any, options?: any) {
     this.logger.log(message, options)
+
+    this.logger = new Logger()
   }
 
   static info(message: any, options?: any) {
     this.logger.info(message, options)
+
+    this.logger = new Logger()
   }
 
   static warn(message: any, options?: any) {
     this.logger.warn(message, options)
+
+    this.logger = new Logger()
   }
 
   static error(message: any, options?: any) {
     this.logger.error(message, options)
+
+    this.logger = new Logger()
   }
 
   static debug(message: any, options?: any) {
     this.logger.debug(message, options)
+
+    this.logger = new Logger()
   }
 
   static success(message: any, options?: any) {
     this.logger.success(message, options)
+
+    this.logger = new Logger()
   }
 }
