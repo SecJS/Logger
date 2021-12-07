@@ -1,8 +1,10 @@
 import { debug } from 'debug'
+import { Env } from '@secjs/env'
 import { Color } from '../utils/Color'
-import { Config } from '@secjs/config'
 import { format } from '../utils/format'
+import { File, Path } from '@secjs/utils'
 import { DriverContract } from '../Contracts/DriverContract'
+import { getConfigFile } from '../utils/getConfigFile'
 
 export interface DebugDriverOpts {
   color: Color
@@ -19,12 +21,14 @@ export class DebugDriver implements DriverContract {
   private readonly _namespace: string
 
   constructor(channel: string) {
-    const config = Config.get(`logging.channels.${channel}`) || {}
+    const configFile = getConfigFile()
 
-    this._level = config.level || 'DEBUG'
-    this._context = config.context || 'DebugDriver'
-    this._formatter = config.formatter || 'context'
-    this._namespace = config.namespace || 'api:main'
+    const channelConfig = configFile.channels[channel]
+
+    this._level = channelConfig.level || 'DEBUG'
+    this._context = channelConfig.context || 'DebugDriver'
+    this._formatter = channelConfig.formatter || 'context'
+    this._namespace = channelConfig.namespace || 'api:main'
   }
 
   transport(message: string, options?: DebugDriverOpts): void {

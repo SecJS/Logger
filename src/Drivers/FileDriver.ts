@@ -1,9 +1,10 @@
 import { parse } from 'path'
-import { Path } from '@secjs/utils'
+import { Env } from '@secjs/env'
 import { Color } from '../utils/Color'
-import { Config } from '@secjs/config'
+import { File, Path } from '@secjs/utils'
 import { DriverContract } from '../Contracts/DriverContract'
 import { createWriteStream, existsSync, mkdirSync } from 'fs'
+import { getConfigFile } from '../utils/getConfigFile'
 
 export interface FileDriverOpts {
   level: string
@@ -19,12 +20,14 @@ export class FileDriver implements DriverContract {
   private readonly _formatter: string
 
   constructor(channel: string) {
-    const config = Config.get(`logging.channels.${channel}`) || {}
+    const configFile = getConfigFile()
 
-    this._level = config.level || 'INFO'
-    this._context = config.context || 'FileDriver'
-    this._filePath = config.filePath || Path.noBuild().logs('secjs.log')
-    this._formatter = config.formatter || 'log'
+    const channelConfig = configFile.channels[channel]
+
+    this._level = channelConfig.level || 'INFO'
+    this._context = channelConfig.context || 'FileDriver'
+    this._filePath = channelConfig.filePath || Path.noBuild().logs('secjs.log')
+    this._formatter = channelConfig.formatter || 'log'
   }
 
   transport(message: string, options?: FileDriverOpts): void {

@@ -1,7 +1,9 @@
-import { Config } from '@secjs/config'
+import { Env } from '@secjs/env'
 import { Color } from '../utils/Color'
 import { format } from '../utils/format'
+import { File, Path } from '@secjs/utils'
 import { DriverContract } from '../Contracts/DriverContract'
+import { getConfigFile } from '../utils/getConfigFile'
 
 export interface ConsoleDriverOpts {
   color: Color
@@ -17,12 +19,14 @@ export class ConsoleDriver implements DriverContract {
   private readonly _streamType: string
 
   constructor(channel: string) {
-    const config = Config.get(`logging.channels.${channel}`) || {}
+    const configFile = getConfigFile()
 
-    this._level = config.level || 'INFO'
-    this._context = config.context || 'ConsoleDriver'
-    this._formatter = config.formatter || 'context'
-    this._streamType = config.streamType || 'stdout'
+    const channelConfig = configFile.channels[channel]
+
+    this._level = channelConfig.level || 'INFO'
+    this._context = channelConfig.context || 'ConsoleDriver'
+    this._formatter = channelConfig.formatter || 'context'
+    this._streamType = channelConfig.streamType || 'stdout'
   }
 
   transport(message: string, options?: ConsoleDriverOpts): void {
@@ -41,3 +45,5 @@ export class ConsoleDriver implements DriverContract {
     process[this._streamType].write(`${message}\n`)
   }
 }
+
+new ConsoleDriver('debug')

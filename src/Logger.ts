@@ -3,9 +3,9 @@ import {
   NotImplementedException,
 } from '@secjs/exceptions'
 
-import { Config } from '@secjs/config'
 import { Color } from './utils/Color'
 import { Drivers } from './Drivers/Drivers'
+import { getConfigFile } from './utils/getConfigFile'
 import { Formatters } from './Formatters/Formatters'
 import { DriverContract } from './Contracts/DriverContract'
 import { FormatterContract } from './Contracts/FormatterContract'
@@ -41,8 +41,12 @@ export class Logger {
 
   constructor(options?: any) {
     this._options = options
-    const defaultChannel = Config.get('logging.default')
-    const channelConfig = Config.get(`logging.channels.${defaultChannel}`)
+
+    const configFile = getConfigFile()
+
+    const defaultChannel = configFile.default
+    const channelConfig = configFile.channels[defaultChannel]
+
     const driver =
       this._options && this._options.driver
         ? this._options.driver
@@ -64,7 +68,9 @@ export class Logger {
   }
 
   changeDefaultChannel(channel: string): Logger {
-    const channelConfig = Config.get(`logging.channels.${channel}`)
+    const configFile = getConfigFile()
+
+    const channelConfig = configFile.channels[channel]
 
     if (!channelConfig) {
       throw new NotImplementedException(
@@ -84,7 +90,9 @@ export class Logger {
   }
 
   channel(channel: string): Logger {
-    const channelConfig = Config.get(`logging.channels.${channel}`)
+    const configFile = getConfigFile()
+
+    const channelConfig = configFile.channels[channel]
 
     if (!channelConfig) {
       throw new NotImplementedException(
@@ -108,8 +116,10 @@ export class Logger {
   channels(...channels: string[]): Logger {
     this._tempDrivers = []
 
+    const configFile = getConfigFile()
+
     channels.forEach(channel => {
-      const channelConfig = Config.get(`logging.channels.${channel}`)
+      const channelConfig = configFile.channels[channel]
 
       if (!channelConfig) {
         throw new NotImplementedException(
