@@ -39,12 +39,6 @@ export class Log {
     return this
   }
 
-  static channels(...channels: string[]): typeof Log {
-    this.logger.channels(...channels)
-
-    return this
-  }
-
   static log(message: any, options?: any) {
     options = {
       ...options,

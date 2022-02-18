@@ -1,10 +1,9 @@
 import { parse } from 'path'
-import { Env } from '@secjs/env'
+import { Path } from '@secjs/utils'
+import { Config } from '@secjs/config'
 import { Color } from '../utils/Color'
-import { File, Path } from '@secjs/utils'
 import { DriverContract } from '../Contracts/DriverContract'
 import { createWriteStream, existsSync, mkdirSync } from 'fs'
-import { getConfigFile } from '../utils/getConfigFile'
 
 export interface FileDriverOpts {
   level: string
@@ -20,9 +19,7 @@ export class FileDriver implements DriverContract {
   private readonly _formatter: string
 
   constructor(channel: string) {
-    const configFile = getConfigFile()
-
-    const channelConfig = configFile.channels[channel]
+    const channelConfig = Config.get(`logging.channels.${channel}`)
 
     this._level = channelConfig.level || 'INFO'
     this._context = channelConfig.context || 'FileDriver'
@@ -30,7 +27,7 @@ export class FileDriver implements DriverContract {
     this._formatter = channelConfig.formatter || 'log'
   }
 
-  transport(message: string, options?: FileDriverOpts): void {
+  async transport(message: string, options?: FileDriverOpts): Promise<void> {
     options = Object.assign(
       {},
       { level: this._level, context: this._context, filePath: this._filePath },
@@ -43,14 +40,13 @@ export class FileDriver implements DriverContract {
       mkdirSync(path.dir, { recursive: true })
     }
 
-    const stream = createWriteStream(options.filePath, { flags: 'a' })
+    return new Promise((resolve, reject) => {
+      const stream = createWriteStream(options.filePath, { flags: 'a' })
 
-    stream.write(`${Color.removeColors(message)}` + '\n')
+      stream.write(`${Color.removeColors(message)}` + '\n')
 
-    stream.on('error', err => {
-      throw err
+      stream.on('error', reject)
+      stream.end(resolve)
     })
-
-    stream.end()
   }
 }

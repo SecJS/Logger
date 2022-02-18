@@ -1,6 +1,6 @@
 {
   "name": "@secjs/logger",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "",
   "license": "MIT",
   "author": "João Lenon",
@@ -22,6 +22,7 @@
     "debug": "4.3.1"
   },
   "devDependencies": {
+    "@secjs/config": "1.1.3",
     "@secjs/env": "1.2.8",
     "@secjs/exceptions": "1.0.4",
     "@secjs/utils": "1.5.8",

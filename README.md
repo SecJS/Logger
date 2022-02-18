@@ -92,7 +92,11 @@ export default {
 > With the config/logging file created you can use Log and Logger classes to start logging.
 
 ```ts
+import { Config } from '@secjs/config'
 import { Log, Logger, Color } from '@secjs/logger'
+
+// First you need to instantiate Config class and call loadSync method to load configuration files
+new Confg().loadSync()
 
 // Log and Logger will always use the default values of channel inside config/logging, the default channel in here is "application".
 Log.log('Hello World!')
@@ -115,17 +119,6 @@ logger.warn('Hello World!', { color: Color.purple, context: 'LogController' })
 ```ts
 Log.channel('debug').log('Hello debug world!', { namespace: 'api:example' })
 // api:example [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Debugger] Hello debug world! +0ms
-```
-
-> You can use many channels to handle the log in all of then
-
-```ts
-Log.channels('debug', 'application', 'file').info('Hello World!', { namespace: 'api:example' })
-// api:example [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Debugger] Hello World! +0ms
-// [SecJS] - PID: 38114 - dd/mm/yyyy, hh:mm:ss PM [Logger] Hello World! +0ms
-
-// In storage/logs/secjs.log file 
-// [SecJS] - PID: 196416 - dd/mm/yyyy, hh:mm:ss [INFO] Hello World!
 ```
 
 ### Extending drivers, channels and formatters
