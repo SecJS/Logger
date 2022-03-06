@@ -10,9 +10,9 @@ export * from './src/Formatters/JsonFormatter'
 export * from './src/Formatters/DebugFormatter'
 export * from './src/Formatters/ContextFormatter'
 
-export * from './src/utils/Color'
-export * from './src/utils/format'
-export * from './src/utils/getTimestamp'
+export * from './src/Utils/Color'
+export * from './src/Utils/format'
+export * from './src/Utils/getTimestamp'
 
 export * from './src/Log'
 export * from './src/Logger'

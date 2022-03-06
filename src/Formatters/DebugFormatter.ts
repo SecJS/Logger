@@ -1,6 +1,6 @@
 import { Chalk } from 'chalk'
-import { Color } from '../utils/Color'
-import { getTimestamp } from '../utils/getTimestamp'
+import { Color } from '../Utils/Color'
+import { getTimestamp } from '../Utils/getTimestamp'
 import { FormatterContract } from '../Contracts/FormatterContract'
 
 export interface DebugFormatterOptions {

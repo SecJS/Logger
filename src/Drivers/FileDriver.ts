@@ -1,7 +1,6 @@
 import { parse } from 'path'
-import { Path } from '@secjs/utils'
-import { Config } from '@secjs/config'
-import { Color } from '../utils/Color'
+import { Color } from '../Utils/Color'
+import { Path, Config } from '@secjs/utils'
 import { DriverContract } from '../Contracts/DriverContract'
 import { createWriteStream, existsSync, mkdirSync } from 'fs'
 
