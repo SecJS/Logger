@@ -1,7 +1,7 @@
 import { debug } from 'debug'
-import { Config } from '@secjs/config'
-import { Color } from '../utils/Color'
-import { format } from '../utils/format'
+import { Config } from '@secjs/utils'
+import { Color } from '../Utils/Color'
+import { format } from '../Utils/format'
 import { DriverContract } from '../Contracts/DriverContract'
 
 export interface DebugDriverOpts {

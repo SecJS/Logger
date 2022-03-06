@@ -92,11 +92,7 @@ export default {
 > With the config/logging file created you can use Log and Logger classes to start logging.
 
 ```ts
-import { Config } from '@secjs/config'
 import { Log, Logger, Color } from '@secjs/logger'
-
-// First you need to instantiate Config class and call loadSync method to load configuration files
-new Confg().loadSync()
 
 // Log and Logger will always use the default values of channel inside config/logging, the default channel in here is "application".
 Log.log('Hello World!')
@@ -217,7 +213,5 @@ logger.channel('mychannel').success('Hello World!!', options)
 ```
 
 ---
-
-## License
 
 Made with 🖤 by [jlenon7](https://github.com/jlenon7) :wave:

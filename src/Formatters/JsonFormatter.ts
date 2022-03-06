@@ -1,5 +1,5 @@
 import { Chalk } from 'chalk'
-import { Color } from '../utils/Color'
+import { Color } from '../Utils/Color'
 import { FormatterContract } from '../Contracts/FormatterContract'
 
 export interface JsonFormatterOptions {

@@ -3,8 +3,8 @@ import {
   NotImplementedException,
 } from '@secjs/exceptions'
 
-import { Config } from '@secjs/config'
-import { Color } from './utils/Color'
+import { Config, Path } from '@secjs/utils'
+import { Color } from './Utils/Color'
 import { Drivers } from './Drivers/Drivers'
 import { Formatters } from './Formatters/Formatters'
 import { DriverContract } from './Contracts/DriverContract'
@@ -62,6 +62,8 @@ export class Logger {
   }
 
   constructor(runtimeConfig: any = {}) {
+    new Config().safeLoad(Path.config('logging'))
+
     this.runtimeConfig = runtimeConfig
     this.driver = this.createDriverInstance()
   }
